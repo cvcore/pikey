@@ -49,7 +49,10 @@ class InputEventAggregator:
             return None
 
         if event.keycode in hid_key_code.MODIFIER_KEYS:
-            hid = hid_key_code.__getattribute__(event.keycode)
+            try:
+                hid = hid_key_code.__getattribute__(event.keycode)
+            except AttributeError:
+                return None
             print(hid)
 
             if event.keystate == KeyEvent.key_up:
@@ -59,7 +62,10 @@ class InputEventAggregator:
                 self._mod_key_state = ctypes.c_uint8(self._mod_key_state | hid).value
 
         else: # Non-modifier keys
-            hid = hid_key_code.__getattribute__(event.keycode)
+            try:
+                hid = hid_key_code.__getattribute__(event.keycode)
+            except AttributeError:
+                return None
 
             if event.keystate == KeyEvent.key_up:
                 self._non_mod_key_buf.remove(hid)
@@ -87,7 +93,7 @@ class InputEventAggregator:
 
 
 if __name__ == "__main__":
-    
+
     aggregator = InputEventAggregator(INPUT_DEVICE, OUTPUT_DEVICE)
 
     async def helper(dev):
